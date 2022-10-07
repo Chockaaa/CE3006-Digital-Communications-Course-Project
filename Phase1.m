@@ -84,7 +84,7 @@ ylabel('Bit Error Rate (BER)');
 title("BER vs SNR");
 
 
-
+%% Phase 2: Modulation for Communication
 
 
 
