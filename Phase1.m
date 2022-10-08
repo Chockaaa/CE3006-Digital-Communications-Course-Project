@@ -82,7 +82,7 @@ title("BER vs SNR");
 
 
 %% Phase 2: Modulation for Communication
-
+clc; close all; clear workspace;
 
 
 
