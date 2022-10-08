@@ -23,12 +23,10 @@ SNR_db_Values_Array = 0:5:50;
 Result = zeros([1 11]);
 
 for k = 1:length(SNR_db_Values_Array)
-    SNR = SNR_db_Values_Array(k);
-
     % SNR (in dB) = 10log10 (S/N) where S is the Signal power (or variance) and N is the Noise power (or variance)
     % Assume signal (the input data) has unit power. 
     % That is, S=1.Obtain the noise variance (=N) from the previous relation and use it together with the noise samples to generate the required noise.
-    
+    SNR = SNR_db_Values_Array(k);
     SignalPower = 1;
     NoisePower_variance = SignalPower ./ (10 .^ (SNR/10));
 
@@ -44,22 +42,21 @@ for k = 1:length(SNR_db_Values_Array)
     % If the received signal is above or equal to the threshold level, take it as 1
     % If the received signal is below the threshold value, take it as 0.
     
-    Output = zeros(1,N_bits);
+    Output_Signal = zeros(1,N_bits);
+    Error_Count = 0;
+
+
     for i = 1:N_bits
         if (Signal_Received(i) > Threshold)
-            Output(i) = 1;
+            Output_Signal(i) = 1;
         else
-            Output(i) = 0;
+            Output_Signal(i) = 0;
         end
-    end
-    
-    % Compute the bit error rate during transmission.
-    % Compare the output values from the threshold logice with the input binary digits (1 or 0 format)
-    % Compute the bit error rate using the relation Bit error rate = (number of errors during transmission)/(total number of bits for transmission)
-    
-    Error_Count = 0;
-    for i = 1:N_bits
-        if Output(i) ~= Raw_Data(i) 
+
+        % Compute the bit error rate during transmission.
+        % Compare the output values from the threshold logice with the input binary digits (1 or 0 format)
+        % Compute the bit error rate using the relation Bit error rate = (number of errors during transmission)/(total number of bits for transmission)
+        if Output_Signal(i) ~= Raw_Data(i) 
             Error_Count = Error_Count + 1;
         end
     end
