@@ -17,7 +17,7 @@ Ts = Fs / baseband_dataRate; % sampling period
 
 %Modulate the data samples with carrier signal (cos(2pft))
 A = 2; %multiplying twice the carrier signal
-t = 0: 1/fs : N_bits/baseband_dataRate;
+t = 0: 1/Fs : N_bits/baseband_dataRate;
 carrier_sig = A .* cos(2*pi*Fc*t);
 
 %gen LPF
@@ -27,9 +27,9 @@ carrier_sig = A .* cos(2*pi*Fc*t);
 
 signalLen = Fs*N_bits /baseband_dataRate + 1;
 
-SNR_db_Values_Array = 0:5:50;
+SNR_db_Values_Array = -20:1:20; %0:5:50;
 
-ER_OOK = zeros([1 11]);
+ER_OOK = zeros(length(SNR_db_Values_Array));
 
 for k = 1:length(SNR_db_Values_Array)
     SNR = (10.^(SNR_db_Values_Array(k)/10));
@@ -37,9 +37,9 @@ for k = 1:length(SNR_db_Values_Array)
     avg_OOK_error =0;
 
     % generate data
-    for j = 1 : 10
+    for j = 1 : 10      % each SNR avg the error over x times
        
-        Data = round(rand(1,nBits));
+        Data = round(rand(1,N_bits));
         
         %fill the data stream
         DataStream = zeros(1, signalLen);
@@ -87,12 +87,12 @@ for k = 1:length(SNR_db_Values_Array)
         plot_decoded_OOK = OOK_Result;
     end
 
-    ER_OOK(i) = (avg_OOK_error / 10)/N_bits;
+    ER_OOK(k) = (avg_OOK_error / 10)/N_bits;
 end
 
 % plot the result using  semilogy’ function
 figure(1);
-semilogy (SNR_dB,Error_RateOOK,'k-*');
+semilogy (SNR_db_Values_Array,ER_OOK,'k-*');
 title('Error rate performance for OOK');
 ylabel('Pe');
 xlabel('Eb/No');
