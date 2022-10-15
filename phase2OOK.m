@@ -1,9 +1,8 @@
+%% Phase 2: Modulation for communication
 clc; close all; clear workspace;
 
 %Generated baseband data
-N_bits = 1024 ;
-Raw_Data = randi([0 1], 1 , N_bits);
-Signal =  2 .* (Raw_Data - 0.5);
+N_bits = 1024;
 
 %Let the carrier frequency be 10 KHz
 Fc = 10000;
@@ -16,27 +15,24 @@ baseband_dataRate = 1000;
 Ts = Fs / baseband_dataRate; % sampling period
 
 %Modulate the data samples with carrier signal (cos(2pft))
-A = 2; %multiplying twice the carrier signal
+A = 1; % multiplying twice the carrier signal
 t = 0: 1/Fs : N_bits/baseband_dataRate;
 carrier_sig = A .* cos(2*pi*Fc*t);
 
 %gen LPF
 %Assume a 6th order filter with cut-off frequency 0.2 in the function
 [b_low, a_low] = butter(6, 0.2);
-[b_high, a_high] = butter(6, 0.2, "high");
 
-signalLen = Fs*N_bits /baseband_dataRate + 1;
-
-SNR_db_Values_Array = -20:1:20; %0:5:50;
-
+signalLen = Fs* N_bits /baseband_dataRate + 1;
+SNR_db_Values_Array = 0:5:50; %0:5:50;
 ER_OOK = zeros(length(SNR_db_Values_Array));
 
 for k = 1:length(SNR_db_Values_Array)
     SNR = (10.^(SNR_db_Values_Array(k)/10));
 
-    avg_OOK_error =0;
+    avg_OOK_error = 0;
 
-    % generate data
+    %generate data
     for j = 1 : 10      % each SNR avg the error over x times
        
         Data = round(rand(1,N_bits));
@@ -65,7 +61,15 @@ for k = 1:length(SNR_db_Values_Array)
 
         % Use the decision threshold logic for decoding of received signals
         OOK_Sampled = sample(OOK_Filtered, Ts, N_bits);
-        OOK_Result = decision_device(OOK_Sampled, N_bits, A/2);
+        
+        OOK_Result = zeros(1, N_bits);
+        for x = 1:N_bits
+            if (OOK_Sampled(x) > A/2)
+                OOK_Result(x) = 1;
+            else
+                OOK_Result(x) = 0;
+            end
+        end
 
    % Calculate the bit error rate performance
         OOK_Error = 0;
@@ -112,16 +116,5 @@ function sampled = sample(x, samplingPeriod, numBit)
     sampled = zeros(1, numBit);
     for i = 1:numBit
         sampled(i) = x((2 * i - 1) * samplingPeriod / 2);
-    end
-end
-
-function bin_out = decision_device(sampled, numBit, threshold)
-    bin_out = zeros(1, numBit);
-    for i = 1:numBit
-        if(sampled(i) > threshold)
-            bin_out(i) = 1;
-        else 
-            bin_out(i) = 0;
-        end
     end
 end
