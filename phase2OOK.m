@@ -12,7 +12,7 @@ Fs = Fc * 16;
 
 %consider the baseband data rate as 1 kbps
 baseband_dataRate = 1000;
-Ts = Fs / baseband_dataRate; % sampling period
+Ts = Fs / baseband_dataRate; % sampling period OR for each bit, sample 160 times.
 
 %Modulate the data samples with carrier signal (cos(2pft))
 A = 1; % multiplying twice the carrier signal
@@ -99,17 +99,19 @@ figure(1);
 semilogy (SNR_db_Values_Array,ER_OOK,'k-*');
 title('Error rate performance for OOK');
 ylabel('Pe');
+ylim([0.001 1]);
 xlabel('Eb/No');
 
 % plot the signals at different stages (data waveform, modulated
 % signal, received signal, demodulated signal and decoded signal) 
 % for a selected SNR value
 figure(2);
-subplot(511);title('Generated Data');plot(plot_signal);
-subplot(512);title('Modulated OOK');plot(plot_mod_OOK,'k');
-subplot(513);title('Received Signal OOK');plot(plot_receive_OOK, 'k')
-subplot(514);title('Demodulated OOK');plot(plot_demod_OOK, 'k');
-subplot(515);title('Decoded Data');plot(plot_decoded_OOK);
+% stairs(plot_signal);hold on;stairs(plot_decoded_OOK);title('Generated Data');ylim([-0.25 1.25]);legend('ori', 'out');
+subplot(511);stairs(plot_signal);title('Generated Data');ylim([-0.25 1.25]);
+subplot(512);plot(plot_mod_OOK,'k');title('Modulated OOK');ylim([-0.25 1.25]);
+subplot(513);plot(plot_receive_OOK, 'k');title('Received Signal OOK');ylim([-0.25 1.25]);
+subplot(514);plot(plot_demod_OOK, 'k');title('Demodulated OOK');ylim([-0.25 1.25]);
+subplot(515);stairs(plot_decoded_OOK);title('Decoded Data');ylim([-0.25 1.25]);
 
 
 function sampled = sample(x, samplingPeriod, numBit)
