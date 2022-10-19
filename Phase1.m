@@ -5,7 +5,7 @@ clc; close all; clear workspace;
 % Generate random binary digits (0 or 1)
 % Convert binary digits to ±1 (means 1 to +1 and 0 to -1). This is your data for transmission.
 
-N_bits = 1024 ;
+N_bits = 1024;
 Raw_Data = randi([0 1], 1 , N_bits);
 Signal =  2 .* (Raw_Data - 0.5);
 
