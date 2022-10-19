@@ -5,14 +5,19 @@ clc; close all; clear workspace;
 % Generate random binary digits (0 or 1)
 % Convert binary digits to ±1 (means 1 to +1 and 0 to -1). This is your data for transmission.
 
+rng(0);
 N_bits = 1024;
 Raw_Data = randi([0 1], 1 , N_bits);
 Signal =  2 .* (Raw_Data - 0.5);
+% figure; stairs(Raw_Data, '-o');ylim([-0.5 1.5]); xlim([1 9]);
+figure; stairs(Raw_Data, '-or');ylim([-2 2]); xlim([1 9]);
+
 
 % Generate equal number of noise samples.
 % The generated noise should have normal distribution with zero mean and unit variance (use the function randn in MATLAB).
-
+rng(0);
 Noise = randn(1, N_bits);
+% figure; plot(linspace(1, N_bits, N_bits), Noise); ylim([-5 5]); xlim([1 9]);
 
 % Change the noise variance with respect to SNR (signal to noise ratio) value.
 % For that, fix the SNR value, (For example, let SNR = 10 dB)
@@ -28,9 +33,9 @@ for k = 1:length(SNR_db_Values_Array)
     % That is, S=1.Obtain the noise variance (=N) from the previous relation and use it together with the noise samples to generate the required noise.
     SNR = SNR_db_Values_Array(k);
     SignalPower = 1;
-    NoisePower_variance = SignalPower ./ (10 .^ (SNR/10));
+    NoisePower = SignalPower ./ (10 .^ (SNR/10));
 
-    Noise = sqrt(NoisePower_variance) .* Noise;
+    Noise = sqrt(NoisePower) .* Noise;
 
     %  Add noise samples with transmitted data. This is assumed as your received signal.
     Signal_Received = Signal + Noise;
@@ -56,13 +61,24 @@ for k = 1:length(SNR_db_Values_Array)
         % Compute the bit error rate during transmission.
         % Compare the output values from the threshold logice with the input binary digits (1 or 0 format)
         % Compute the bit error rate using the relation Bit error rate = (number of errors during transmission)/(total number of bits for transmission)
-        if Output_Signal(i) ~= Raw_Data(i) 
+        if Output_Signal(i) ~= Raw_Data(i) %returns True when output and raw data are not equal.
             Error_Count = Error_Count + 1;
         end
     end
     
     Bit_Error_Rate = Error_Count ./ N_bits;
     Result(k) = Bit_Error_Rate;
+    
+%     figure;
+%     stairs(Raw_Data, '-o');
+%     hold on
+% %     stairs(Signal_Received, '-o');
+% %     hold on
+%     stairs(Output_Signal, '-o');
+%     ylim([-10 10]); 
+% %     xlim([1 9]);
+%     title("SNR: " + SNR);
+%     legend('Original', 'Output');
 
 % Repeat the steps for different SNRs
 % Repeat the steps from noise addition to bit error rate computation
@@ -74,14 +90,16 @@ end
 % Plot your result in a graph.
 % X axis should be SNR values and Y axis should be bit error rate.
 
-figure(1)
+figure;
 plot(SNR_db_Values_Array,Result)
+ylim([-0.1 0.2]); xlim([-1 51]);
 xlabel('SNR Values (dB)');
 ylabel('Bit Error Rate (BER)');
 title("BER vs SNR");
 
+% ASSUMPTIONS:
 
-%% Phase 2: Modulation for Communication
+%% Clear everything
 clc; close all; clear workspace;
 
 
