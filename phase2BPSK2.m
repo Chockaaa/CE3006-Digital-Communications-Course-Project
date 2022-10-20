@@ -31,25 +31,22 @@ signalLen = Fs* N_bits /baseband_dataRate + 1;
 SNR_db_Values_Array = 0:5:50; 
 ER_BPSK = zeros(1, length(SNR_db_Values_Array));
 
-% rng(0);
-% Original_Binary = randi([0 1], 1 , N_bits);
+rng(0);
+Data = randi([0 1], 1 , N_bits);
+
+%fill the data stream
+DataStream = zeros(1, signalLen);
+for i = 1: signalLen - 1
+    DataStream(i) = Data(ceil(i*baseband_dataRate/Fs));
+end
+DataStream(signalLen) = DataStream(signalLen - 1);
+
+DataStream_BPSK = DataStream .* 2 - 1;
+Signal_BPSK = carrier_sig .* DataStream_BPSK;
 
 for k = 1:length(SNR_db_Values_Array)
     SNR = (10.^(SNR_db_Values_Array(k)/10));
-      
-    rng(0);
-    Data = randi([0 1], 1 , N_bits);
-
-    %fill the data stream
-    DataStream = zeros(1, signalLen);
-    for i = 1: signalLen - 1
-        DataStream(i) = Data(ceil(i*baseband_dataRate/Fs));
-    end
-    DataStream(signalLen) = DataStream(signalLen - 1);
     
-    DataStream_BPSK = DataStream .* 2 - 1;
-    Signal_BPSK = carrier_sig .* DataStream_BPSK;
-
     %generate noise
     Signal_Power_BPSK = (norm(Signal_BPSK)^2)/signalLen;
     Noise_Power_BPSK = Signal_Power_BPSK ./SNR;
