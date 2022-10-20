@@ -1,6 +1,8 @@
 %% Phase 2: Modulation for communication
 clc; close all; clear workspace;
 
+%% User defined functions
+
 %Generated baseband data
 N_bits = 1024;
 
@@ -24,7 +26,7 @@ carrier_sig = A .* cos(2*pi*Fc*t);
 [b_low, a_low] = butter(6, 0.2);
 
 signalLen = Fs* N_bits /baseband_dataRate + 1;
-SNR_db_Values_Array = 0:5:50; %0:5:50;
+SNR_db_Values_Array = 0:5:50; 
 ER_OOK = zeros(length(SNR_db_Values_Array));
 
 for k = 1:length(SNR_db_Values_Array)
@@ -94,9 +96,9 @@ for k = 1:length(SNR_db_Values_Array)
     ER_OOK(k) = (avg_OOK_error / 10)/N_bits;
 end
 
-% plot the result using  semilogy’ function
+% plot the result using semilogy function
 figure(1);
-semilogy (SNR_db_Values_Array,ER_OOK,'k-*');
+semilogy (SNR_db_Values_Array,ER_OOK,'.');
 title('Error rate performance for OOK');
 ylabel('Pe');
 ylim([0.001 1]);
@@ -112,11 +114,3 @@ subplot(512);plot(plot_mod_OOK,'k');title('Modulated OOK');ylim([-0.25 1.25]);
 subplot(513);plot(plot_receive_OOK, 'k');title('Received Signal OOK');ylim([-0.25 1.25]);
 subplot(514);plot(plot_demod_OOK, 'k');title('Demodulated OOK');ylim([-0.25 1.25]);
 subplot(515);stairs(plot_decoded_OOK);title('Decoded Data');ylim([-0.25 1.25]);
-
-
-function sampled = sample(x, samplingPeriod, numBit)
-    sampled = zeros(1, numBit);
-    for i = 1:numBit
-        sampled(i) = x((2 * i - 1) * samplingPeriod / 2);
-    end
-end

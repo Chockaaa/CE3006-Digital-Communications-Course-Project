@@ -3,21 +3,25 @@ clc; close all; clear workspace;
 
 % Assume the number of bits for transmission is 1024 (means, N= 1024).
 % Generate random binary digits (0 or 1)
-% Convert binary digits to Â±1 (means 1 to +1 and 0 to -1). This is your data for transmission.
+% Convert binary digits to ±1 (means 1 to +1 and 0 to -1). This is your data for transmission.
 
 rng(0);
 N_bits = 1024;
-Raw_Data = randi([0 1], 1 , N_bits);
-Signal =  2 .* (Raw_Data - 0.5);
-% figure; stairs(Raw_Data, '-o');ylim([-0.5 1.5]); xlim([1 9]);
-figure; stairs(Raw_Data, '-or');ylim([-2 2]); xlim([1 9]);
+Original_Binary = randi([0 1], 1 , N_bits);
+Original_Signal =  2 .* (Original_Binary - 0.5);
+% figure; stairs(Original_Binary, '-o'); hold on; stairs(Original_Signal, '-o'); 
+% ylim([-2 2]); xlim([1 9]); legend('Binary', 'Signal');
 
+
+% fprintf('Program paused. Press enter to continue.\n');
+% pause;
 
 % Generate equal number of noise samples.
 % The generated noise should have normal distribution with zero mean and unit variance (use the function randn in MATLAB).
 rng(0);
 Noise = randn(1, N_bits);
 % figure; plot(linspace(1, N_bits, N_bits), Noise); ylim([-5 5]); xlim([1 9]);
+% figure; stairs(Noise); ylim([-5 5]); xlim([1 9]);
 
 % Change the noise variance with respect to SNR (signal to noise ratio) value.
 % For that, fix the SNR value, (For example, let SNR = 10 dB)
@@ -27,18 +31,28 @@ SNR_db_Values_Array = 0:5:50;
 
 Result = zeros([1 11]);
 
+% fprintf('Program paused. Press enter to continue.\n');
+% pause;
+
+Noise_bef = Noise;
 for k = 1:length(SNR_db_Values_Array)
     % SNR (in dB) = 10log10 (S/N) where S is the Signal power (or variance) and N is the Noise power (or variance)
     % Assume signal (the input data) has unit power. 
     % That is, S=1.Obtain the noise variance (=N) from the previous relation and use it together with the noise samples to generate the required noise.
     SNR = SNR_db_Values_Array(k);
+    
+    fprintf('SNR: %d\n', SNR);
+    
     SignalPower = 1;
     NoisePower = SignalPower ./ (10 .^ (SNR/10));
-
+    
     Noise = sqrt(NoisePower) .* Noise;
+    
+%     figure; stairs(Noise_bef, '-o'); hold on; stairs(Noise, '-o'); 
+%     xlim([1 9]); legend('Noise_bef', 'Noise');
 
     %  Add noise samples with transmitted data. This is assumed as your received signal.
-    Signal_Received = Signal + Noise;
+    Signal_Received = Original_Signal + Noise;
 
     % Consider a threshold logic at the receiver.
     % Fix the threshold value as 0 (the transmitted data is +1 and -1, and 0 is the mid value)
@@ -61,13 +75,16 @@ for k = 1:length(SNR_db_Values_Array)
         % Compute the bit error rate during transmission.
         % Compare the output values from the threshold logice with the input binary digits (1 or 0 format)
         % Compute the bit error rate using the relation Bit error rate = (number of errors during transmission)/(total number of bits for transmission)
-        if Output_Signal(i) ~= Raw_Data(i) %returns True when output and raw data are not equal.
+        if Output_Signal(i) ~= Original_Binary(i) %returns True when output and raw data are not equal.
             Error_Count = Error_Count + 1;
         end
     end
     
     Bit_Error_Rate = Error_Count ./ N_bits;
     Result(k) = Bit_Error_Rate;
+    
+%     fprintf('Program paused. Press enter to continue.\n');
+%     pause;
     
 %     figure;
 %     stairs(Raw_Data, '-o');
@@ -98,6 +115,8 @@ ylabel('Bit Error Rate (BER)');
 title("BER vs SNR");
 
 % ASSUMPTIONS:
+fprintf('Program paused. Press enter to continue.\n');
+pause;
 
 %% Clear everything
 clc; close all; clear workspace;
