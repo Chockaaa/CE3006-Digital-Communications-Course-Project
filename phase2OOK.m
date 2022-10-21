@@ -34,7 +34,7 @@ for k = 1:length(SNR_db_Values_Array)
 
     % Generate data
     for j = 1 : 10     % Each SNR avg the error over 10 times
-        Data = round(rand(1,N_bits));
+        Data = randi([0 1], 1 , N_bits);
         
 
         % Fill the data stream
