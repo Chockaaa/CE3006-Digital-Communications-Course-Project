@@ -68,7 +68,7 @@ for k = 1:length(SNR_db_Values_Array)
         % Use the decision threshold logic for decoding of received signals
         OOK_Sampled = sample(OOK_Filtered, Ts, N_bits);
         
-        OOK_Result = decision_logic(OOK_Sampled,N_bits,A/2);
+        OOK_Result = decision_logic(OOK_Sampled,N_bits,(A*A)/2);
         
         % Calculate the bit error rate performance
         OOK_Error = 0;    
