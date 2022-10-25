@@ -1,7 +1,6 @@
 %% Phase 2: Modulation for communication
 clc; close all; clear workspace;
 
-
 %Generated baseband data
 N_bits = 1024;
 
@@ -19,10 +18,10 @@ Ts = Fs / baseband_dataRate; % sampling period OR for each bit, sample 160 times
 A = 1; % multiplying twice the carrier signal
 t = 0: 1/Fs : N_bits/baseband_dataRate;
 carrier_sig = A .* cos(2*pi*Fc*t);
-% figure; plot(carrier_sig); ylim([-1.25 1.25]); xlim([0 100]);
-% fprintf('1\n');
-% pause;
-
+figure; plot(carrier_sig); ylim([-1.25 1.25]); xlim([0 100]);
+fprintf('1\n');
+pause;
+%%
 %gen LPF
 %Assume a 6th order filter with cut-off frequency 0.2 in the function
 [b_low, a_low] = butter(6, 0.2);
@@ -39,11 +38,11 @@ for k = 1:length(SNR_db_Values_Array)
       
     rng(0);
     Data = randi([0 1], 1 , N_bits);
-%     figure; plot(linspace(1, N_bits, N_bits), Data); ylim([-5 5]); xlim([1 9]);
-%     figure; stairs(Data); ylim([-5 5]); xlim([1 9]);
-%     fprintf('SNR: %d\n', SNR_db_Values_Array(k));
-%     fprintf('SNR2: %d\n', SNR);
-%     pause;
+    figure; plot(linspace(1, N_bits, N_bits), Data); ylim([-5 5]); xlim([1 9]);
+    figure; stairs(Data); ylim([-5 5]); xlim([1 9]);
+    fprintf('SNR: %d\n', SNR_db_Values_Array(k));
+    fprintf('SNR2: %d\n', SNR);
+    pause;
 
     %fill the data stream
     DataStream = zeros(1, signalLen);
@@ -51,10 +50,10 @@ for k = 1:length(SNR_db_Values_Array)
         DataStream(i) = Data(ceil(i*baseband_dataRate/Fs));
     end
     DataStream(signalLen) = DataStream(signalLen - 1);
-%     figure; plot(linspace(1, signalLen, signalLen), DataStream); ylim([-5 5]); xlim([1 1440]);
-%     figure; stairs(DataStream); ylim([-5 5]); xlim([1 1440]);
-%     fprintf('2\n');
-%     pause;
+    figure; plot(linspace(1, signalLen, signalLen), DataStream); ylim([-5 5]); xlim([1 1440]);
+    figure; stairs(DataStream); ylim([-5 5]); xlim([1 1440]);
+    fprintf('2\n');
+    pause;
 
 
     % OOK

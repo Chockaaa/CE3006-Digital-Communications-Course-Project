@@ -1,7 +1,6 @@
 %% Phase 2: Modulation for communication
 clc; close all; clear workspace;
 
-
 %Generated baseband data
 N_bits = 1024;
 
@@ -43,12 +42,16 @@ DataStream(signalLen) = DataStream(signalLen - 1);
 
 DataStream_BPSK = DataStream .* 2 - 1;
 Signal_BPSK = carrier_sig .* DataStream_BPSK;
+figure; plot(Signal_BPSK); xlim([0 1440]); ylim([-5 5]);
+fprintf('1\n');
+pause;
 
 for k = 1:length(SNR_db_Values_Array)
     SNR = (10.^(SNR_db_Values_Array(k)/10));
     
     %generate noise
     Signal_Power_BPSK = (norm(Signal_BPSK)^2)/signalLen;
+    
     Noise_Power_BPSK = Signal_Power_BPSK ./SNR;
     NoiseBPSK = sqrt(Noise_Power_BPSK/2) .*randn(1,signalLen);
 
@@ -84,7 +87,7 @@ for k = 1:length(SNR_db_Values_Array)
     if(SNR_db_Values_Array(k) == 5)
         plot_signal = Data;
         plot_mod_BPSK = Signal_BPSK;
-        plot_receive_BPSK = OOK_Signal_Received;
+        plot_receive_BPSK = ReceiveBPSK;
         plot_demod_BPSK = OutputBPSK;
         plot_decoded_BPSK = BPSK_Result;
     end

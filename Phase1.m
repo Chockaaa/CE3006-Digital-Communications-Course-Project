@@ -6,21 +6,21 @@ clc; close all; clear workspace;
 % Convert binary digits to ±1 (means 1 to +1 and 0 to -1). This is your data for transmission.
 
 rng(0);
-N_bits = 1024;
+N_bits = 9;
 Original_Binary = randi([0 1], 1 , N_bits);
 Original_Signal =  2 .* (Original_Binary - 0.5);
-% figure; stairs(Original_Binary, '-o'); hold on; stairs(Original_Signal, '-o'); 
-% ylim([-2 2]); xlim([1 9]); legend('Binary', 'Signal');
 
-
-% fprintf('Program paused. Press enter to continue.\n');
-% pause;
+figure; stairs(Original_Binary, '-o'); hold on; stairs(Original_Signal, '-o'); 
+ylim([-2 2]); xlim([1 9]); legend('Binary', 'Signal');
+fprintf('Program paused. Press enter to continue.\n');
+pause;
 
 % Generate equal number of noise samples.
 % The generated noise should have normal distribution with zero mean and unit variance (use the function randn in MATLAB).
 rng(0);
 Noise = randn(1, N_bits);
-% figure; plot(linspace(1, N_bits, N_bits), Noise); ylim([-5 5]); xlim([1 9]);
+figure; plot(linspace(1, N_bits, N_bits), Noise); ylim([-5 5]); xlim([1 9]);
+pause;
 % figure; stairs(Noise); ylim([-5 5]); xlim([1 9]);
 
 % Change the noise variance with respect to SNR (signal to noise ratio) value.
