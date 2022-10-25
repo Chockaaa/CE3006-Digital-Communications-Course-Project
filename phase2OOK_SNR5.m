@@ -77,7 +77,7 @@ figure; stairs(OOK_Sampled, "-o"); ylim([-0.25 2]); xlim([1 9]); title("Sampled"
 
 OOK_Result = zeros(1, N_bits);
 for x = 1:N_bits
-    if (OOK_Sampled(x) > (0.5*Amp))
+    if (OOK_Sampled(x) > ((Amp*Amp)/2))
         OOK_Result(x) = 1;
     else
         OOK_Result(x) = 0;
@@ -86,7 +86,7 @@ end
 
 figure; 
 stairs(OOK_Sampled, "-o"); hold on;
-yline((0.5*Amp)); hold on;
+yline((Amp*Amp)/2); hold on;
 stairs(OOK_Result); ylim([-0.25 1.25]); xlim([1 9]); title("Binary output");
 
 figure;
