@@ -15,14 +15,16 @@ baseband_dataRate = 1000;
 SamplesPerBit = Fs / baseband_dataRate; % sampling period
 
 % Modulate the data samples with carrier signal (cos(2pft))
-A = 1; % multiplying twice the carrier signal
+Amp = 1; % multiplying twice the carrier signal
 t = 0: 1/Fs : N_bits/baseband_dataRate;
-carrier_sig = A .* cos(2*pi*Fc*t);
+carrier_sig = Amp .* cos(2*pi*Fc*t);
+carrier_sig2 = Amp .* cos(2*pi*(10*Fc)*t);
 No_runs = 100;
 
-% Gen LPF
 % Assume a 6th order filter with cut-off frequency 0.2 in the function
 [b_low, a_low] = butter(6, 0.2);
+%define 6th order HP butterworth filter with 0.2 normalized cutoff frequency
+[b_high,a_high] = butter(6, 0.2, 'high');
 
 signalLen = Fs* N_bits /baseband_dataRate + 1;
 SNR_db_Values_Array = -50:5:50; %0:5:50;
@@ -46,27 +48,34 @@ for k = 1:length(SNR_db_Values_Array)
         end
         
         DataStream(signalLen) = DataStream(signalLen - 1);
-
-        % OOK
-        Signal = carrier_sig .* DataStream;
+        
+        Signal_1 = DataStream .* carrier_sig2;
+        Signal_0 = (1 - DataStream) .* carrier_sig;
+        
+        Signal = Signal_0 + Signal_1;
 
         % Generate noise
-        SignalPower = (norm(Signal)^2)/signalLen;
+        SignalPower = bandpower(Signal);
         
         NoisePower_variance = SignalPower ./ Spower_2_Npower;
         Noise = sqrt(NoisePower_variance/2) .*randn(1,signalLen);
 
         Signal_Received = Signal + Noise;
-
-        Squared = Signal_Received.^2; %square law device (detection)
-
-        % Filtering of the demodulated signal
-        Filtered = filtfilt(b_low, a_low, Squared);
-
-        % Use the decision threshold logic for decoding of received signals
-        Sampled = sample(Filtered, SamplesPerBit, N_bits);
         
-        Result = decision_logic(Sampled,N_bits,(A*A)/2);
+        % Fiter the signal received first.
+        Filtered_0 = filtfilt(b_low,a_low,Signal_Received);
+        Filtered_1 = filtfilt(b_high,a_high,Signal_Received);
+
+        % The squaring of output;
+        Squared_0 = Filtered_0.^2;
+        Squared_1 = Filtered_1.^2;
+        
+        % Adding both;
+        Summation = Squared_1 - Squared_0;
+        
+        Sampled = sample(Summation, SamplesPerBit, N_bits);
+        
+        Result = decision_logic(Sampled,N_bits,0);
         
         % Calculate the bit error rate performance
         No_Bit_Error = 0;    
@@ -84,7 +93,7 @@ for k = 1:length(SNR_db_Values_Array)
         plot_signal = Data;
         plot_mod = Signal;
         plot_receive = Signal_Received;
-        plot_demod = Filtered;
+        plot_demod = Summation;
         plot_decoded = Result;
     end
 
@@ -94,7 +103,7 @@ end
 % plot the result using  semilogy’ function
 figure(1);
 semilogy (SNR_db_Values_Array,Bit_Error_Rate,'k-*');
-title('Error rate performance for OOK');
+title('Error rate performance for BPSK');
 ylabel('Pe');
 xlabel('Eb/No');
 
