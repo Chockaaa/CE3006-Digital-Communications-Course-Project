@@ -1,5 +1,5 @@
 %% Phase 2: Modulation for communication
-clc; close all; clear workspace;
+clc; close all; clear;
 
 
 %Generated baseband data

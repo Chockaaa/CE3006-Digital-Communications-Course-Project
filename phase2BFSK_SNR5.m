@@ -18,10 +18,14 @@ SamplePerBit = Fs / baseband_dataRate; % sampling period OR for each bit, sample
 Amp = 1;
 t = 0: 1/Fs : N_bits/baseband_dataRate;
 carrier_sig = Amp .* cos(2*pi*Fc*t);
-% figure; plot(carrier_sig); ylim([-1.25 1.25]); xlim([0 160]); title("Carrier Sig");
+carrier_sig2 = Amp .* cos(2*pi*(10*Fc)*t);
+figure; plot(carrier_sig); title("1st freq");ylim([-1.25 1.25]); xlim([1 100]);
+figure; plot(carrier_sig2); title("2nd freq");ylim([-1.25 1.25]); xlim([1 100]);
 
-%Assume a 6th order LPF with cut-off frequency 0.2 in the function
-[b_low, a_low] = butter(6, 0.2);
+%define 6th order LP butterworth filter with 0.2 normalized cutoff frequency
+[b_low,a_low] = butter(6, 0.2);
+%define 6th order HP butterworth filter with 0.2 normalized cutoff frequency
+[b_high,a_high] = butter(6, 0.2, 'high');
 
 signalLen = Fs* N_bits /baseband_dataRate + 1;
 SNR = 5;
@@ -39,15 +43,17 @@ for i = 1: signalLen - 1
     DataStream(i) = Data(ceil(i*baseband_dataRate/Fs));
 end
 DataStream(signalLen) = DataStream(signalLen - 1);
-DataStream = DataStream .* 2 - 1;
+% DataStream = DataStream .* 2 - 1;
 figure; stairs(DataStream); ylim([-5 5]); xlim([1 1440]); title("Extended to Fs");
 
 % Modulated
-Signal = carrier_sig .* DataStream;
-figure; 
-% stairs(DataStream); hold on; 
-plot(Signal); ylim([-5 5]); xlim([1 1440]); title("Mod Signal");
-% legend("Data", "Mod Signal");
+Signal_BFSK1 = DataStream .* carrier_sig2;
+Signal_BFSK2 = (1 - DataStream) .* carrier_sig;
+figure; plot(Signal_BFSK1); title("1");ylim([-1.25 1.25]); xlim([1 1440]);
+figure; plot(Signal_BFSK2); title("0");ylim([-1.25 1.25]); xlim([1 1440]);
+
+Signal = Signal_BFSK1 + Signal_BFSK2;
+figure; plot(Signal); title("10");ylim([-1.25 1.25]); xlim([1 1440]);
 
 %% Simulating channel and channel noise
 
@@ -65,14 +71,20 @@ plot(Signal_Received); ylim([-5 5]); xlim([1 1440]); title("Signal Received");
 
 %% At the receiver
 
-Squared = Signal_Received .* carrier_sig; %square law device (detection)
-figure; plot(Squared); ylim([-3.5 3.5]); xlim([1 1440]); title("Mul with carrier sig");
-    
-Filtered = filtfilt(b_low, a_low, Squared);
-figure; plot(Filtered); ylim([-3.5 3.5]); xlim([1 1440]); title("Filtered");
-
-% Use the decision threshold logic for decoding of received signals
-Sampled = sample(Filtered, SamplePerBit, N_bits);
+%non coherent detection -- bandpass filters
+ReceiveFSK_LOW = filtfilt(b_low,a_low,Signal_Received);
+figure; plot(ReceiveFSK_LOW); ylim([-3.5 3.5]); xlim([1 1440]); title("filtered low");
+ReceiveFSK_HIGH = filtfilt(b_high,a_high,Signal_Received);
+figure; plot(ReceiveFSK_HIGH); ylim([-3.5 3.5]); xlim([1 1440]); title("filtered high");
+%Square Law
+SquaredFSK_LOW = ReceiveFSK_LOW.*ReceiveFSK_LOW;
+figure; plot(SquaredFSK_LOW); ylim([-3.5 3.5]); xlim([1 1440]); title("squared low");
+SquaredFSK_HIGH = ReceiveFSK_HIGH.*ReceiveFSK_HIGH;
+figure; plot(SquaredFSK_HIGH); ylim([-3.5 3.5]); xlim([1 1440]); title("squared high");
+SquaredFSK = SquaredFSK_HIGH - SquaredFSK_LOW;
+figure; plot(SquaredFSK); ylim([-3.5 3.5]); xlim([1 1440]); title("total squared");
+%sample and decision device
+Sampled = sample(SquaredFSK, SamplePerBit, N_bits);
 figure; stairs(Sampled, "-o"); ylim([-2 2]); xlim([1 9]); title("Sampled");
 
 %% 567
