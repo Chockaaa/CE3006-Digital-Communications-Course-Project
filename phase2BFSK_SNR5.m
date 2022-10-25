@@ -77,9 +77,9 @@ figure; plot(ReceiveFSK_LOW); ylim([-3.5 3.5]); xlim([1 1440]); title("filtered 
 ReceiveFSK_HIGH = filtfilt(b_high,a_high,Signal_Received);
 figure; plot(ReceiveFSK_HIGH); ylim([-3.5 3.5]); xlim([1 1440]); title("filtered high");
 %Square Law
-SquaredFSK_LOW = ReceiveFSK_LOW.*ReceiveFSK_LOW;
+SquaredFSK_LOW = ReceiveFSK_LOW.^2;
 figure; plot(SquaredFSK_LOW); ylim([-3.5 3.5]); xlim([1 1440]); title("squared low");
-SquaredFSK_HIGH = ReceiveFSK_HIGH.*ReceiveFSK_HIGH;
+SquaredFSK_HIGH = ReceiveFSK_HIGH.^2;
 figure; plot(SquaredFSK_HIGH); ylim([-3.5 3.5]); xlim([1 1440]); title("squared high");
 SquaredFSK = SquaredFSK_HIGH - SquaredFSK_LOW;
 figure; plot(SquaredFSK); ylim([-3.5 3.5]); xlim([1 1440]); title("total squared");
