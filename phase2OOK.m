@@ -1,5 +1,5 @@
 %% Phase 2: Modulation for communication
-clc; close all; clear workspace;
+clc; close all; clear;
 
 % Generated baseband data
 N_bits = 1024;
@@ -18,14 +18,15 @@ Ts = Fs / baseband_dataRate; % sampling period
 A = 1; % multiplying twice the carrier signal
 t = 0: 1/Fs : N_bits/baseband_dataRate;
 carrier_sig = A .* cos(2*pi*Fc*t);
+No_runs = 100;
 
 % Gen LPF
 % Assume a 6th order filter with cut-off frequency 0.2 in the function
 [b_low, a_low] = butter(6, 0.2);
 
 signalLen = Fs* N_bits /baseband_dataRate + 1;
-SNR_db_Values_Array = 0:5:50; %0:5:50;
-ER_OOK = zeros(length(SNR_db_Values_Array));
+SNR_db_Values_Array = -50:5:50; %0:5:50;
+ER_OOK = zeros(1, length(SNR_db_Values_Array));
 
 for k = 1:length(SNR_db_Values_Array)
     SNR = (10.^(SNR_db_Values_Array(k)/10));   
@@ -33,7 +34,7 @@ for k = 1:length(SNR_db_Values_Array)
     avg_OOK_error = 0;
 
     % Generate data
-    for j = 1 : 10     % Each SNR avg the error over 10 times
+    for j = 1 : No_runs     % Each SNR avg the error over 10 times
         Data = randi([0 1], 1 , N_bits);
         
 
@@ -49,8 +50,6 @@ for k = 1:length(SNR_db_Values_Array)
 
         % OOK
         OOK_Signal = carrier_sig .* DataStream;
-
-        
 
         % Generate noise
         OOK_SignalPower = (norm(OOK_Signal)^2)/signalLen;
@@ -90,7 +89,7 @@ for k = 1:length(SNR_db_Values_Array)
         plot_decoded_OOK = OOK_Result;
     end
 
-    ER_OOK(k) = (avg_OOK_error / 10)/N_bits;
+    ER_OOK(k) = (avg_OOK_error / No_runs)/N_bits + eps;
 end
 
 % plot the result using  semilogy’ function
@@ -103,14 +102,12 @@ xlabel('Eb/No');
 % Plot the signals at different stages (data waveform, modulated
 % Signal, received signal, demodulated signal and decoded signal) 
 % for a selected SNR value
-figure(2);
-subplot(511);plot(plot_signal);title('Generated Data');
-subplot(512);plot(plot_mod_OOK,'k');title('Modulated OOK');
-subplot(513);plot(plot_receive_OOK, 'k');title('Received Signal OOK');
-subplot(514);plot(plot_demod_OOK, 'k');title('Demodulated OOK');
-subplot(515);plot(plot_decoded_OOK);title('Decoded Data');
-
-
+% figure(2);
+% subplot(511);plot(plot_signal);title('Generated Data');
+% subplot(512);plot(plot_mod_OOK,'k');title('Modulated OOK');
+% subplot(513);plot(plot_receive_OOK, 'k');title('Received Signal OOK');
+% subplot(514);plot(plot_demod_OOK, 'k');title('Demodulated OOK');
+% subplot(515);plot(plot_decoded_OOK);title('Decoded Data');
 
 function Result_Out = decision_logic(sampled,N_bits,threshold)
     Result_Out = zeros(1, N_bits);
