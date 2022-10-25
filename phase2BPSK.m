@@ -15,9 +15,9 @@ baseband_dataRate = 1000;
 SamplesPerBit = Fs / baseband_dataRate; % sampling period
 
 % Modulate the data samples with carrier signal (cos(2pft))
-A = 1; % multiplying twice the carrier signal
+Amp = 1; % multiplying twice the carrier signal
 t = 0: 1/Fs : N_bits/baseband_dataRate;
-carrier_sig = A .* cos(2*pi*Fc*t);
+carrier_sig = Amp .* cos(2*pi*Fc*t);
 No_runs = 100;
 
 % Gen LPF
@@ -46,27 +46,27 @@ for k = 1:length(SNR_db_Values_Array)
         end
         
         DataStream(signalLen) = DataStream(signalLen - 1);
-
-        % OOK
+        DataStream = DataStream .* 2 - 1;
+        
         Signal = carrier_sig .* DataStream;
 
         % Generate noise
-        SignalPower = (norm(Signal)^2)/signalLen;
+        SignalPower = bandpower(Signal);
         
         NoisePower_variance = SignalPower ./ Spower_2_Npower;
         Noise = sqrt(NoisePower_variance/2) .*randn(1,signalLen);
 
         Signal_Received = Signal + Noise;
 
-        Squared = Signal_Received.^2; %square law device (detection)
+        Mul_with_carrier = Signal_Received .* carrier_sig; %square law device (detection)
 
         % Filtering of the demodulated signal
-        Filtered = filtfilt(b_low, a_low, Squared);
+        Filtered = filtfilt(b_low, a_low, Mul_with_carrier);
 
         % Use the decision threshold logic for decoding of received signals
         Sampled = sample(Filtered, SamplesPerBit, N_bits);
         
-        Result = decision_logic(Sampled,N_bits,(A*A)/2);
+        Result = decision_logic(Sampled,N_bits,0);
         
         % Calculate the bit error rate performance
         No_Bit_Error = 0;    
@@ -94,7 +94,7 @@ end
 % plot the result using  semilogy’ function
 figure(1);
 semilogy (SNR_db_Values_Array,Bit_Error_Rate,'k-*');
-title('Error rate performance for OOK');
+title('Error rate performance for BPSK');
 ylabel('Pe');
 xlabel('Eb/No');
 
