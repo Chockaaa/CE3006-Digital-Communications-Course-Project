@@ -208,7 +208,7 @@ end
 figure(1);
 s1 = semilogy (SNR_db_Values_Array,ER_OOK,'k');
 hold on;
-s2 = semilogy (SNR_db_Values_Array,CBC_ER_OOK,'g');
+s2 = semilogy (SNR_db_Values_Array,CBC_ER_OOK,'r');
 hold on;
 s3 = semilogy (SNR_db_Values_Array,Hamming_ER_OOK,'b');
 hold off
