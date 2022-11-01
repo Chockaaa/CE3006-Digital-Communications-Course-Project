@@ -101,12 +101,16 @@ xlabel('Eb/No');
 % Plot the signals at different stages (data waveform, modulated
 % Signal, received signal, demodulated signal and decoded signal) 
 % for a selected SNR value
+bits_y_range = [-0.25 1.25];
+cont_y_range = [-2 2];
+
+
 figure(2);
-subplot(511);plot(plot_signal);title('Generated Data');
-subplot(512);plot(plot_mod,'k');title('Modulated');
-subplot(513);plot(plot_receive, 'k');title('Received Signal');
-subplot(514);plot(plot_demod, 'k');title('Demodulated');
-subplot(515);plot(plot_decoded);title('Decoded Data');
+subplot(511); stairs(plot_signal);title('Generated Data');ylim(bits_y_range); xlim([1 9]);
+subplot(512); plot(plot_mod);title('Modulated');ylim(cont_y_range); xlim([1 1280]);xticks(0:160:1280);
+subplot(513); plot(plot_receive);title('Received Signal');ylim(cont_y_range); xlim([1 1280]);xticks(0:160:1280);
+subplot(514); plot(plot_demod);title('Demodulated');ylim(cont_y_range); xlim([1 1280]);xticks(0:160:1280);
+subplot(515); stairs(plot_decoded);title('Decoded Data');ylim(bits_y_range); xlim([1 9]);
 
 function Result_Out = decision_logic(sampled,N_bits,threshold)
     Result_Out = zeros(1, N_bits);
