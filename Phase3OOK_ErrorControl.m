@@ -37,7 +37,7 @@ Enc_carrier_sig = A .* cos(2*pi*Fc*Enc_t);
 % Gen LPF
 % Assume a 6th order filter with cut-off frequency 0.2 in the function
 [b_low, a_low] = butter(6, 0.2);
-SNR_db_Values_Array = 0:5:50; %0:5:50;
+SNR_db_Values_Array = -50:5:50; %0:5:50;
 
 signalLen = Fs* N_bits /baseband_dataRate + 1;
 Enc_signalLen = Fs* Enc_N_bits /baseband_dataRate + 1;
@@ -206,11 +206,11 @@ end
 
 % plot the result using  semilogy’ function
 figure(1);
-s1 = semilogy (SNR_db_Values_Array,ER_OOK,'k');
+s1 = semilogy (SNR_db_Values_Array,ER_OOK,'k-*');
 hold on;
-s2 = semilogy (SNR_db_Values_Array,CBC_ER_OOK,'r');
+s2 = semilogy (SNR_db_Values_Array,CBC_ER_OOK,'r-o');
 hold on;
-s3 = semilogy (SNR_db_Values_Array,Hamming_ER_OOK,'b');
+s3 = semilogy (SNR_db_Values_Array,Hamming_ER_OOK,'b-+');
 hold off
 hold on
 
