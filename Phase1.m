@@ -12,17 +12,18 @@ Signal =  2 .* (Raw_Data - 0.5);
 % Generate equal number of noise samples.
 % The generated noise should have normal distribution with zero mean and unit variance (use the function randn in MATLAB).
 
-Noise = randn(1, N_bits);
+
 
 % Change the noise variance with respect to SNR (signal to noise ratio) value.
 % For that, fix the SNR value, (For example, let SNR = 10 dB)
 % Use SNR value to generate noise variance.
 
-SNR_db_Values_Array = 0:5:50;
+SNR_db_Values_Array = -50:5:50;
 
-Result = zeros([1 11]);
+Result = zeros([1 21]);
 
 for k = 1:length(SNR_db_Values_Array)
+    Noise = randn(1, N_bits);
     % SNR (in dB) = 10log10 (S/N) where S is the Signal power (or variance) and N is the Noise power (or variance)
     % Assume signal (the input data) has unit power. 
     % That is, S=1.Obtain the noise variance (=N) from the previous relation and use it together with the noise samples to generate the required noise.
@@ -75,14 +76,12 @@ end
 % X axis should be SNR values and Y axis should be bit error rate.
 
 figure(1)
-plot(SNR_db_Values_Array,Result)
+plot(SNR_db_Values_Array,Result,'k-*')
 xlabel('SNR Values (dB)');
 ylabel('Bit Error Rate (BER)');
 title("BER vs SNR");
 
 
-%% Phase 2: Modulation for Communication
-clc; close all; clear workspace;
 
 
 
