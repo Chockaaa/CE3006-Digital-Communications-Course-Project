@@ -35,7 +35,6 @@ for k = 1:length(SNR_db_Values_Array)
 
     % Generate data
     for j = 1 : No_runs     % Each SNR avg the error over 100 times
-        rng(0);
         Data = randi([0 1], 1 , N_bits);
         
         % Fill the data stream
