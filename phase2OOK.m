@@ -15,7 +15,7 @@ baseband_dataRate = 1000;
 SamplesPerBit = Fs / baseband_dataRate; % sampling period
 
 % Modulate the data samples with carrier signal (cos(2pft))
-A = 1; % multiplying twice the carrier signal
+A = 1; 
 t = 0: 1/Fs : N_bits/baseband_dataRate;
 carrier_sig = A .* cos(2*pi*Fc*t);
 No_runs = 100;
@@ -34,7 +34,7 @@ for k = 1:length(SNR_db_Values_Array)
     avg_error = 0;
 
     % Generate data
-    for j = 1 : No_runs     % Each SNR avg the error over 10 times
+    for j = 1 : No_runs     % Each SNR avg the error over 100 times
         Data = randi([0 1], 1 , N_bits);
         
         % Fill the data stream

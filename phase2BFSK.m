@@ -103,7 +103,7 @@ end
 % plot the result using  semilogy’ function
 figure(1);
 semilogy (SNR_db_Values_Array,Bit_Error_Rate,'k-*');
-title('Error rate performance for BPSK');
+title('Error rate performance for BFSK');
 ylabel('Pe');
 xlabel('Eb/No');
 
