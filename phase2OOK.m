@@ -15,7 +15,7 @@ baseband_dataRate = 1000;
 SamplesPerBit = Fs / baseband_dataRate; % sampling period
 
 % Modulate the data samples with carrier signal (cos(2pft))
-A = 1; % multiplying twice the carrier signal
+A = 1; 
 t = 0: 1/Fs : N_bits/baseband_dataRate;
 carrier_sig = A .* cos(2*pi*Fc*t);
 No_runs = 100;
@@ -34,7 +34,7 @@ for k = 1:length(SNR_db_Values_Array)
     avg_error = 0;
 
     % Generate data
-    for j = 1 : No_runs     % Each SNR avg the error over 10 times
+    for j = 1 : No_runs     % Each SNR avg the error over 100 times
         Data = randi([0 1], 1 , N_bits);
         
         % Fill the data stream
@@ -81,6 +81,7 @@ for k = 1:length(SNR_db_Values_Array)
     end
 
     if(SNR_db_Values_Array(k) == 5)
+        plot_DS = DataStream;
         plot_signal = Data;
         plot_mod = Signal;
         plot_receive = Signal_Received;
@@ -92,21 +93,25 @@ for k = 1:length(SNR_db_Values_Array)
 end
 
 % plot the result using  semilogy’ function
-figure(1);
-semilogy (SNR_db_Values_Array,Bit_Error_Rate,'k-*');
-title('Error rate performance for OOK');
-ylabel('Pe');
-xlabel('Eb/No');
+% figure(1);
+% semilogy (SNR_db_Values_Array,Bit_Error_Rate,'k-*');
+% title('Error rate performance for OOK');
+% ylabel('Pe');
+% xlabel('Eb/No');
 
 % Plot the signals at different stages (data waveform, modulated
 % Signal, received signal, demodulated signal and decoded signal) 
 % for a selected SNR value
+
+bits_y_range = [-0.25 1.25];
+cont_y_range = [-2 2];
+
 figure(2);
-subplot(511);plot(plot_signal);title('Generated Data');
-subplot(512);plot(plot_mod,'k');title('Modulated');
-subplot(513);plot(plot_receive, 'k');title('Received Signal');
-subplot(514);plot(plot_demod, 'k');title('Demodulated');
-subplot(515);plot(plot_decoded);title('Decoded Data');
+subplot(511); stairs(plot_signal);title('Generated Data');ylim(bits_y_range); xlim([1 9]);
+subplot(512); plot(plot_mod);title('Modulated');ylim(cont_y_range); xlim([1 1280]);xticks(0:160:1280);
+subplot(513); plot(plot_receive);title('Received Signal');ylim(cont_y_range); xlim([1 1280]);xticks(0:160:1280);
+subplot(514); plot(plot_demod);title('Demodulated');ylim(cont_y_range); xlim([1 1280]);xticks(0:160:1280);
+subplot(515); stairs(plot_decoded);title('Decoded Data');ylim(bits_y_range); xlim([1 9]);
 
 function Result_Out = decision_logic(sampled,N_bits,threshold)
     Result_Out = zeros(1, N_bits);
