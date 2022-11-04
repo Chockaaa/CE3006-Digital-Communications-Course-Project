@@ -50,7 +50,7 @@ CBC_ER_BPSK = zeros(1,length(SNR_db_Values_Array));
 LBC_ER_BPSK = zeros(1,length(SNR_db_Values_Array));
 Hamming_ER_BPSK = zeros(1,length(SNR_db_Values_Array));
 
-num_of_runs = 10;
+num_of_runs = 20;
 for x = 1:length(SNR_db_Values_Array)
     SNR = (10.^(SNR_db_Values_Array(x)/10));   
 
@@ -107,7 +107,8 @@ for x = 1:length(SNR_db_Values_Array)
 
        
         % Generate noise BPSK
-        BPSK_SignalPower = (norm(BPSK_Signal).^2)/signalLen;        
+        BPSK_SignalPower = 
+        %BPSK_SignalPower = (norm(BPSK_Signal).^2)/signalLen;        
         BPSK_NoisePower_variance = BPSK_SignalPower ./ SNR;
         BPSK_Noise = sqrt(BPSK_NoisePower_variance/2) .*randn(1,signalLen);
         % Generate noise Cyclic Block Code BPSK
@@ -133,24 +134,24 @@ for x = 1:length(SNR_db_Values_Array)
         Hamming_BPSK_Signal_Received = Hamming_BPSK_Signal + Hamming_BPSK_Noise;
         
         
-        %square law device (detection) BPSK
-        BPSK_Squared = BPSK_Signal_Received.*(2.*carrier_sig); %square law device (detection)
-        %square law device (detection) Cyclic Block Code: BPSK
-        CBC_BPSK_Squared = CBC_BPSK_Signal_Received.*(2.*Enc_carrier_sig);
-        %square law device (detection) Linear Block Code: BPSK
-        LBC_BPSK_Squared = LBC_BPSK_Signal_Received.*(2.*Enc_carrier_sig);
-        %square law device (detection) Hamming: BPSK
-        Hamming_BPSK_Squared = Hamming_BPSK_Signal_Received.*(2.*Enc_carrier_sig); 
+        %Coherent detection BPSK
+        BPSK_demod = BPSK_Signal_Received.*(2.*carrier_sig); %square law device (detection)
+        %Coherent detection Cyclic Block Code: BPSK
+        CBC_BPSK_demod = CBC_BPSK_Signal_Received.*(2.*Enc_carrier_sig);
+        %Coherent detection Linear Block Code: BPSK
+        LBC_BPSK_demod = LBC_BPSK_Signal_Received.*(2.*Enc_carrier_sig);
+        %Coherent detection Hamming: BPSK
+        Hamming_BPSK_demod = Hamming_BPSK_Signal_Received.*(2.*Enc_carrier_sig); 
         
 
         % Filtering of the demodulated signal BPSK
-        BPSK_Filtered = filtfilt(b_low, a_low, BPSK_Squared);
+        BPSK_Filtered = filtfilt(b_low, a_low, BPSK_demod);
         % Filtering of the demodulated signal Cyclic Block Code: BPSK
-        CBC_BPSK_Filtered = filtfilt(b_low, a_low, CBC_BPSK_Squared);
+        CBC_BPSK_Filtered = filtfilt(b_low, a_low, CBC_BPSK_demod);
         % Filtering of the demodulated signal Cyclic Block Code: BPSK
-        LBC_BPSK_Filtered = filtfilt(b_low, a_low, LBC_BPSK_Squared);
+        LBC_BPSK_Filtered = filtfilt(b_low, a_low, LBC_BPSK_demod);
         % Filtering of the demodulated signal Cyclic Block Code: BPSK
-        Hamming_BPSK_Filtered = filtfilt(b_low, a_low, Hamming_BPSK_Squared);
+        Hamming_BPSK_Filtered = filtfilt(b_low, a_low, Hamming_BPSK_demod);
 
 
         % Use the decision threshold logic for decoding of received signals
@@ -181,7 +182,7 @@ for x = 1:length(SNR_db_Values_Array)
                 BPSK_Error = BPSK_Error + 1;
             end
         end     
-        avg_BPSK_error = BPSK_Error + avg_BPSK_error;
+        avg_BPSK_error = BPSK_Error/N_bits + avg_BPSK_error;
 
         % Calculate the bit error rate performance Cyclic Block Code BPSK
         CBC_BPSK_Error = 0;        
@@ -190,7 +191,7 @@ for x = 1:length(SNR_db_Values_Array)
                 CBC_BPSK_Error = CBC_BPSK_Error + 1;
             end
         end     
-        CBC_avg_BPSK_error = CBC_BPSK_Error + CBC_avg_BPSK_error;
+        CBC_avg_BPSK_error = CBC_BPSK_Error/N_bits + CBC_avg_BPSK_error;
 
         % Calculate the bit error rate performance Linear Block Code BPSK
         LBC_BPSK_Error = 0;        
@@ -199,7 +200,7 @@ for x = 1:length(SNR_db_Values_Array)
                 LBC_BPSK_Error = LBC_BPSK_Error + 1;
             end
         end     
-        LBC_avg_BPSK_error = LBC_BPSK_Error + LBC_avg_BPSK_error;
+        LBC_avg_BPSK_error = LBC_BPSK_Error/N_bits + LBC_avg_BPSK_error;
 
         % Calculate the bit error rate performance Hamming BPSK
         Hamming_BPSK_Error = 0;        
@@ -208,15 +209,15 @@ for x = 1:length(SNR_db_Values_Array)
                 Hamming_BPSK_Error = Hamming_BPSK_Error + 1;
             end
         end     
-        Hamming_avg_BPSK_error = Hamming_BPSK_Error + Hamming_avg_BPSK_error;
+        Hamming_avg_BPSK_error = Hamming_BPSK_Error/N_bits + Hamming_avg_BPSK_error;
     
     end
 
 
-    ER_BPSK(x) = (avg_BPSK_error / num_of_runs)/N_bits;
-    CBC_ER_BPSK(x) = (CBC_avg_BPSK_error / num_of_runs)/N_bits;
-    LBC_ER_BPSK(x) = (LBC_avg_BPSK_error / num_of_runs)/N_bits;
-    Hamming_ER_BPSK(x) = (Hamming_avg_BPSK_error / num_of_runs)/N_bits;
+    ER_BPSK(x) = (avg_BPSK_error / num_of_runs);
+    CBC_ER_BPSK(x) = (CBC_avg_BPSK_error / num_of_runs);
+    LBC_ER_BPSK(x) = (LBC_avg_BPSK_error / num_of_runs);
+    Hamming_ER_BPSK(x) = (Hamming_avg_BPSK_error / num_of_runs);
 
 end
 

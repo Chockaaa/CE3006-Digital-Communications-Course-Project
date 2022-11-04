@@ -50,7 +50,7 @@ CBC_ER_BPSK = zeros(1,length(SNR_db_Values_Array));
 LBC_ER_BPSK = zeros(1,length(SNR_db_Values_Array));
 Hamming_ER_BPSK = zeros(1,length(SNR_db_Values_Array));
 
-num_of_runs = 10;
+num_of_runs = 20;
 for x = 1:length(SNR_db_Values_Array)
     SNR = (10.^(SNR_db_Values_Array(x)/10));   
 
@@ -71,7 +71,7 @@ for x = 1:length(SNR_db_Values_Array)
             DataStream(i) = Data(ceil(i*baseband_dataRate/Fs));            
         end          
         DataStream(signalLen) = DataStream(signalLen - 1);
-        DataStream = DataStream - 1;
+        DataStream = DataStream .* 2 - 1;
         
         BPSK_Signal = carrier_sig .* DataStream;
 
@@ -134,13 +134,13 @@ for x = 1:length(SNR_db_Values_Array)
         
         
         %Coherent detection BPSK
-        BPSK_demod = BPSK_Signal_Received.*(2.*carrier_sig); %square law device (detection)
+        BPSK_demod = BPSK_Signal_Received.*(carrier_sig); %square law device (detection)
         %Coherent detection Cyclic Block Code: BPSK
-        CBC_BPSK_demod = CBC_BPSK_Signal_Received.*(2.*Enc_carrier_sig);
+        CBC_BPSK_demod = CBC_BPSK_Signal_Received.*(Enc_carrier_sig);
         %Coherent detection Linear Block Code: BPSK
-        LBC_BPSK_demod = LBC_BPSK_Signal_Received.*(2.*Enc_carrier_sig);
+        LBC_BPSK_demod = LBC_BPSK_Signal_Received.*(Enc_carrier_sig);
         %Coherent detection Hamming: BPSK
-        Hamming_BPSK_demod = Hamming_BPSK_Signal_Received.*(2.*Enc_carrier_sig); 
+        Hamming_BPSK_demod = Hamming_BPSK_Signal_Received.*(Enc_carrier_sig); 
         
 
         % Filtering of the demodulated signal BPSK
@@ -213,7 +213,7 @@ for x = 1:length(SNR_db_Values_Array)
     end
 
 
-    ER_BPSK(x) = (avg_BPSK_error / num_of_runs);
+    ER_BPSK(x) = (avg_BPSK_error / num_of_runs) + eps;
     CBC_ER_BPSK(x) = (CBC_avg_BPSK_error / num_of_runs);
     LBC_ER_BPSK(x) = (LBC_avg_BPSK_error / num_of_runs);
     Hamming_ER_BPSK(x) = (Hamming_avg_BPSK_error / num_of_runs);
