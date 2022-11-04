@@ -210,40 +210,6 @@ for x = 1:length(SNR_db_Values_Array)
     
     end
 
-    if(SNR_db_Values_Array(x) == 5)
-        % OOK
-        plot_signal = Data;
-        plot_mod_OOK = OOK_Signal;
-        plot_receive_OOK = OOK_Signal_Received;
-        plot_demod_OOK = OOK_Filtered;
-        plot_decoded_OOK = OOK_Result;
-
-        % OOK Cyclic Block Coding
-        CBC_plot_signal = Data;
-        CBC_Encoded_signal = CBCSignal;
-        CBC_plot_mod_OOK = CBC_OOK_Signal;
-        CBC_plot_receive_OOK = CBC_OOK_Signal_Received;
-        CBC_plot_demod_OOK = CBC_OOK_Filtered;
-        CBC_plot_decoded_OOK = CBC_OOK_DecodedResult;
-
-        % OOK Linear Block Coding
-        LBC_plot_signal = Data;
-        LBC_Encoded_signal = LBCSignal;
-        LBC_plot_mod_OOK = LBC_OOK_Signal;
-        LBC_plot_receive_OOK = LBC_OOK_Signal_Received;
-        LBC_plot_demod_OOK = LBC_OOK_Filtered;
-        LBC_plot_decoded_OOK = LBC_OOK_DecodedResult;
-
-        % OOK Hamming
-        Hamming_plot_signal = Data;
-        Hamming_Encoded_signal = HammingSignal;
-        Hamming_plot_mod_OOK = Hamming_OOK_Signal;
-        Hamming_plot_receive_OOK = Hamming_OOK_Signal_Received;
-        Hamming_plot_demod_OOK = Hamming_OOK_Filtered;
-        Hamming_plot_decoded_OOK = Hamming_OOK_DecodedResult;
-
-    end
-
     ER_OOK(x) = (avg_OOK_error / 20)/N_bits;
     CBC_ER_OOK(x) = (CBC_avg_OOK_error / 20)/N_bits;
     LBC_ER_OOK(x) = (LBC_avg_OOK_error / 20)/N_bits;
@@ -262,7 +228,6 @@ hold on;
 s4 = semilogy (SNR_db_Values_Array,Hamming_ER_OOK,'b-x');
 hold off
 hold on
-
 title('Error rate performance for OOK, Cyclic Block Code,Linear Block Code, Hamming Code');
 ylabel('Pe');
 xlabel('Eb/No');
@@ -279,7 +244,6 @@ function Result_Out = decision_logic(sampled,N_bits,threshold)
         end
     end
 end
-
 
 
 function sampled = sample(x, samplingPeriod, numBit)
