@@ -215,7 +215,7 @@ for x = 1:length(SNR_db_Values_Array)
     end
 
 
-    ER_BPSK(x) = (avg_BPSK_error / num_of_runs) + eps;
+    ER_BPSK(x) = (avg_BPSK_error / num_of_runs);
     CBC_ER_BPSK(x) = (CBC_avg_BPSK_error / num_of_runs);
     LBC_ER_BPSK(x) = (LBC_avg_BPSK_error / num_of_runs);
     Hamming_ER_BPSK(x) = (Hamming_avg_BPSK_error / num_of_runs);
