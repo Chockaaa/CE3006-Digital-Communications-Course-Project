@@ -151,7 +151,7 @@ for x = 1:length(SNR_db_Values_Array)
         % Transmit Signal Hamming: BFSK
         Hamming_BFSK_Signal_Received = Hamming_BFSK_Signal + Hamming_BFSK_Noise;
         
-        
+        %{
         %Coherent detection BFSK
         BFSK_demod = BFSK_Signal_Received.*(2.*carrier_sig); %square law device (detection)
         %Coherent detection Cyclic Block Code: BFSK
@@ -160,20 +160,20 @@ for x = 1:length(SNR_db_Values_Array)
         LBC_BFSK_demod = LBC_BFSK_Signal_Received.*(2.*Enc_carrier_sig);
         %Coherent detection Hamming: BFSK
         Hamming_BFSK_demod = Hamming_BFSK_Signal_Received.*(2.*Enc_carrier_sig); 
-        
+        %}
 
         % Filtering of the demodulated signal BFSK
-        BFSK_Filtered_0 = filtfilt(b_low, a_low, BFSK_demod);
-        BFSK_Filtered_1 = filtfilt(b_high, a_high, BFSK_demod);
+        BFSK_Filtered_0 = filtfilt(b_low, a_low, BFSK_Signal_Received);
+        BFSK_Filtered_1 = filtfilt(b_high, a_high, BFSK_Signal_Received);
         % Filtering of the demodulated signal Cyclic Block Code: BFSK
-        CBC_BFSK_Filtered_0 = filtfilt(b_low, a_low, CBC_BFSK_demod);
-        CBC_BFSK_Filtered_1 = filtfilt(b_high, a_high, CBC_BFSK_demod);
+        CBC_BFSK_Filtered_0 = filtfilt(b_low, a_low, CBC_BFSK_Signal_Received);
+        CBC_BFSK_Filtered_1 = filtfilt(b_high, a_high, CBC_BFSK_Signal_Received);
         % Filtering of the demodulated signal Cyclic Block Code: BFSK
-        LBC_BFSK_Filtered_0 = filtfilt(b_low, a_low, LBC_BFSK_demod);
-        LBC_BFSK_Filtered_1 = filtfilt(b_high, a_high, LBC_BFSK_demod);
+        LBC_BFSK_Filtered_0 = filtfilt(b_low, a_low, LBC_BFSK_Signal_Received);
+        LBC_BFSK_Filtered_1 = filtfilt(b_high, a_high, LBC_BFSK_Signal_Received);
         % Filtering of the demodulated signal Cyclic Block Code: BFSK
-        Hamming_BFSK_Filtered_0 = filtfilt(b_low, a_low, Hamming_BFSK_demod);
-        Hamming_BFSK_Filtered_1 = filtfilt(b_high, a_high, Hamming_BFSK_demod);
+        Hamming_BFSK_Filtered_0 = filtfilt(b_low, a_low, Hamming_BFSK_Signal_Received);
+        Hamming_BFSK_Filtered_1 = filtfilt(b_high, a_high, Hamming_BFSK_Signal_Received);
 
 
         % Use the decision threshold logic for decoding of received signals
