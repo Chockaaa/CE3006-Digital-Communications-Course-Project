@@ -71,7 +71,7 @@ for x = 1:length(SNR_db_Values_Array)
             DataStream(i) = Data(ceil(i*baseband_dataRate/Fs));            
         end          
         DataStream(signalLen) = DataStream(signalLen - 1);
-        DataStream = DataStream .* 2 - 1;
+        DataStream = DataStream - 1;
         
         BPSK_Signal = carrier_sig .* DataStream;
 
@@ -133,24 +133,24 @@ for x = 1:length(SNR_db_Values_Array)
         Hamming_BPSK_Signal_Received = Hamming_BPSK_Signal + Hamming_BPSK_Noise;
         
         
-        %square law device (detection) BPSK
-        BPSK_Squared = BPSK_Signal_Received.*(2.*carrier_sig); %square law device (detection)
-        %square law device (detection) Cyclic Block Code: BPSK
-        CBC_BPSK_Squared = CBC_BPSK_Signal_Received.*(2.*Enc_carrier_sig);
-        %square law device (detection) Linear Block Code: BPSK
-        LBC_BPSK_Squared = LBC_BPSK_Signal_Received.*(2.*Enc_carrier_sig);
-        %square law device (detection) Hamming: BPSK
-        Hamming_BPSK_Squared = Hamming_BPSK_Signal_Received.*(2.*Enc_carrier_sig); 
+        %Coherent detection BPSK
+        BPSK_demod = BPSK_Signal_Received.*(2.*carrier_sig); %square law device (detection)
+        %Coherent detection Cyclic Block Code: BPSK
+        CBC_BPSK_demod = CBC_BPSK_Signal_Received.*(2.*Enc_carrier_sig);
+        %Coherent detection Linear Block Code: BPSK
+        LBC_BPSK_demod = LBC_BPSK_Signal_Received.*(2.*Enc_carrier_sig);
+        %Coherent detection Hamming: BPSK
+        Hamming_BPSK_demod = Hamming_BPSK_Signal_Received.*(2.*Enc_carrier_sig); 
         
 
         % Filtering of the demodulated signal BPSK
-        BPSK_Filtered = filtfilt(b_low, a_low, BPSK_Squared);
+        BPSK_Filtered = filtfilt(b_low, a_low, BPSK_demod);
         % Filtering of the demodulated signal Cyclic Block Code: BPSK
-        CBC_BPSK_Filtered = filtfilt(b_low, a_low, CBC_BPSK_Squared);
+        CBC_BPSK_Filtered = filtfilt(b_low, a_low, CBC_BPSK_demod);
         % Filtering of the demodulated signal Cyclic Block Code: BPSK
-        LBC_BPSK_Filtered = filtfilt(b_low, a_low, LBC_BPSK_Squared);
+        LBC_BPSK_Filtered = filtfilt(b_low, a_low, LBC_BPSK_demod);
         % Filtering of the demodulated signal Cyclic Block Code: BPSK
-        Hamming_BPSK_Filtered = filtfilt(b_low, a_low, Hamming_BPSK_Squared);
+        Hamming_BPSK_Filtered = filtfilt(b_low, a_low, Hamming_BPSK_demod);
 
 
         % Use the decision threshold logic for decoding of received signals
