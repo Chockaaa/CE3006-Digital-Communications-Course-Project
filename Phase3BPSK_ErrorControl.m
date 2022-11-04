@@ -71,9 +71,8 @@ for x = 1:length(SNR_db_Values_Array)
             DataStream(i) = Data(ceil(i*baseband_dataRate/Fs));            
         end          
         DataStream(signalLen) = DataStream(signalLen - 1);
-        DataStream = DataStream .* 2 - 1;
-        
-        BPSK_Signal = carrier_sig .* DataStream;
+        BPSK_TransmitSignal = DataStream .* 2 - 1;
+        BPSK_Signal = carrier_sig .* BPSK_TransmitSignal;
 
         % BPSK Cyclic Block Code: Data stream 
         CBCSignal = encode(Data,n,k,'cyclic/binary',genpoly);
@@ -83,7 +82,8 @@ for x = 1:length(SNR_db_Values_Array)
             CBC_DataStream(i) = CBCSignal(ceil(i*baseband_dataRate/Fs));
         end
         CBC_DataStream(Enc_signalLen) = CBC_DataStream(Enc_signalLen -1);
-        CBC_BPSK_Signal = Enc_carrier_sig .* CBC_DataStream;
+        CBC_BPSK_TransmitSignal = CBC_DataStream .* 2 - 1;
+        CBC_BPSK_Signal = Enc_carrier_sig .* CBC_BPSK_TransmitSignal;
 
         % BPSK Linear Block Code: Data stream 
         LBCSignal = encode(Data,n,k,'linear/binary',gen_mat);
@@ -93,7 +93,8 @@ for x = 1:length(SNR_db_Values_Array)
             LBC_DataStream(i) = LBCSignal(ceil(i*baseband_dataRate/Fs));
         end
         LBC_DataStream(Enc_signalLen) = LBC_DataStream(Enc_signalLen -1);
-        LBC_BPSK_Signal = Enc_carrier_sig .* LBC_DataStream;
+        LBC_BPSK_TransmitSignal = LBC_DataStream .* 2 - 1;
+        LBC_BPSK_Signal = Enc_carrier_sig .* LBC_BPSK_TransmitSignal;
 
 
         % BPSK Hamming: Data stream         
@@ -103,7 +104,8 @@ for x = 1:length(SNR_db_Values_Array)
             Hamming_DataStream(i) = HammingSignal(ceil(i*baseband_dataRate/Fs));
         end
         Hamming_DataStream(Enc_signalLen) = Hamming_DataStream(Enc_signalLen -1);
-        Hamming_BPSK_Signal = Enc_carrier_sig .* Hamming_DataStream;
+        Hamming_BPSK_TransmitSignal = Hamming_DataStream .* 2 - 1;
+        Hamming_BPSK_Signal = Enc_carrier_sig .* Hamming_BPSK_TransmitSignal;
 
        
         % Generate noise BPSK
@@ -134,13 +136,13 @@ for x = 1:length(SNR_db_Values_Array)
         
         
         %Coherent detection BPSK
-        BPSK_demod = BPSK_Signal_Received.*(carrier_sig); %square law device (detection)
+        BPSK_demod = BPSK_Signal_Received.*(2.*carrier_sig); %square law device (detection)
         %Coherent detection Cyclic Block Code: BPSK
-        CBC_BPSK_demod = CBC_BPSK_Signal_Received.*(Enc_carrier_sig);
+        CBC_BPSK_demod = CBC_BPSK_Signal_Received.*(2 .*Enc_carrier_sig);
         %Coherent detection Linear Block Code: BPSK
-        LBC_BPSK_demod = LBC_BPSK_Signal_Received.*(Enc_carrier_sig);
+        LBC_BPSK_demod = LBC_BPSK_Signal_Received.*(2 .*Enc_carrier_sig);
         %Coherent detection Hamming: BPSK
-        Hamming_BPSK_demod = Hamming_BPSK_Signal_Received.*(Enc_carrier_sig); 
+        Hamming_BPSK_demod = Hamming_BPSK_Signal_Received.*(2 .*Enc_carrier_sig); 
         
 
         % Filtering of the demodulated signal BPSK
@@ -167,7 +169,7 @@ for x = 1:length(SNR_db_Values_Array)
         % Linear Block Code:
         LBC_BPSK_Sampled = sample(LBC_BPSK_Filtered, Ts, Enc_N_bits);        
         LBC_BPSK_Result = decision_logic(LBC_BPSK_Sampled,Enc_N_bits,0);
-        LBC_BPSK_DecodedResult = decode(LBC_BPSK_Result,n,k,'linear/binary',gen_mat,trt);
+        LBC_BPSK_DecodedResult = decode(LBC_BPSK_Result,n,k,'linear/binary',gen_mat);
 
         % Hamming Block Code:
         Hamming_BPSK_Sampled = sample(Hamming_BPSK_Filtered, Ts, Enc_N_bits);        
