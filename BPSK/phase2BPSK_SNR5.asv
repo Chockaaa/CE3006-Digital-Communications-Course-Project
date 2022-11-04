@@ -20,8 +20,7 @@ t = 0: 1/Fs : N_bits/baseband_dataRate;
 carrier_sig = Amp .* cos(2*pi*Fc*t);
 % figure; plot(carrier_sig); ylim([-1.25 1.25]); xlim([0 160]); title("Carrier Sig");
 
-%Assume a 6th order LPF with cut-off frequency 0.2 in the function
-[b_low, a_low] = butter(6, 0.2);
+
 
 signalLen = Fs* N_bits /baseband_dataRate + 1;
 SNR = 5;
@@ -67,10 +66,13 @@ plot(Signal_Received); ylim([-5 5]); xlim([1 1440]); title("Signal Received");
 
 Squared = Signal_Received .* carrier_sig; %square law device (detection)
 figure; plot(Squared); ylim([-3.5 3.5]); xlim([1 1440]); title("Mul with carrier sig");
-    
+
+%% 1
+[b_low, a_low] = butter(6, 0.2);
 Filtered = filtfilt(b_low, a_low, Squared);
 figure; plot(Filtered); ylim([-3.5 3.5]); xlim([1 1440]); title("Filtered");
 
+%% 2
 % Use the decision threshold logic for decoding of received signals
 Sampled = sample(Filtered, SamplePerBit, N_bits);
 figure; stairs(Sampled, "-o"); ylim([-2 2]); xlim([1 9]); title("Sampled");
