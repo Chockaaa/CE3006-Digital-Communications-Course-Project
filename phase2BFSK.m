@@ -97,7 +97,7 @@ for k = 1:length(SNR_db_Values_Array)
         plot_decoded = Result;
     end
 
-    Bit_Error_Rate(k) = (avg_error / No_runs)/N_bits + eps;
+    Bit_Error_Rate(k) = (avg_error / No_runs)/N_bits;
 end
 
 % plot the result using  semilogy’ function
@@ -106,6 +106,7 @@ semilogy (SNR_db_Values_Array,Bit_Error_Rate,'k-*');
 title('Error rate performance for BFSK');
 ylabel('Pe');
 xlabel('Eb/No');
+xlim([-50 50]);
 
 % Plot the signals at different stages (data waveform, modulated
 % Signal, received signal, demodulated signal and decoded signal) 
