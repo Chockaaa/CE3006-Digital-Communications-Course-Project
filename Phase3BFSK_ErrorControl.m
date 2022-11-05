@@ -76,7 +76,6 @@ for x = 1:length(SNR_db_Values_Array)
             DataStream(i) = Data(ceil(i*baseband_dataRate/Fs));            
         end          
         DataStream(signalLen) = DataStream(signalLen - 1);
-        DataStream = DataStream - 1;
         
         BFSK_Signal_1 = DataStream .* carrier_sig2;
         BFSK_Signal_0 = (1 - DataStream) .* carrier_sig;
