@@ -231,7 +231,7 @@ hold on
 title('Error rate performance for OOK, Cyclic Block Code,Linear Block Code, Hamming Code');
 ylabel('Pe');
 xlabel('Eb/No');
-legend([s1(1),s2(1),s3(1),s4(1)],'OOK','OOK-CBC','OOK-LBC','OOK-Hamming','location','northeast');
+legend([s1(1),s2(1),s3(1),s4(1)],'OOK','OOK-CBC','OOK-LBC','OOK-Hamming','location','southwest');
 hold off
 
 function Result_Out = decision_logic(sampled,N_bits,threshold)
